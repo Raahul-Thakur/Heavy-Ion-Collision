@@ -15,6 +15,7 @@ env/
 
 # Large local analysis datasets
 *.root
+!sample_data/AO2D_sample.root
 
 # OS/editor noise
 .DS_Store

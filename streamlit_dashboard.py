@@ -8,6 +8,9 @@ Run:
 from __future__ import annotations
 
 import os
+import shutil
+import tempfile
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -20,6 +23,34 @@ from heavy_ion_alice_analysis import (
     run_analysis,
 )
 
+APP_DIR = Path(__file__).resolve().parent
+SAMPLE_ROOT_FILE = APP_DIR / "sample_data" / "AO2D_sample.root"
+
+
+def prepare_data_source(source_mode, uploaded_files, server_data_dir, server_pattern):
+    """Return (data directory, glob pattern, temporary directory handle)."""
+    if source_mode == "Bundled sample":
+        if not SAMPLE_ROOT_FILE.exists():
+            raise FileNotFoundError("The bundled sample ROOT file is missing from this deployment.")
+        return str(SAMPLE_ROOT_FILE.parent), SAMPLE_ROOT_FILE.name, None
+
+    if source_mode == "Upload ROOT files":
+        if not uploaded_files:
+            raise ValueError("Upload at least one .root file first.")
+
+        temp_dir = tempfile.TemporaryDirectory(prefix="heavy-ion-upload-")
+        for index, uploaded_file in enumerate(uploaded_files):
+            safe_name = Path(uploaded_file.name).name
+            destination = Path(temp_dir.name) / f"{index:03d}_{safe_name}"
+            uploaded_file.seek(0)
+            with destination.open("wb") as output_file:
+                shutil.copyfileobj(uploaded_file, output_file)
+        return temp_dir.name, "*.root", temp_dir
+
+    if not server_data_dir:
+        raise ValueError("Enter a ROOT file folder first.")
+    return server_data_dir, server_pattern, None
+
 
 st.set_page_config(page_title="ALICE Heavy-Ion Analysis", layout="wide")
 
@@ -27,8 +58,27 @@ st.title("ALICE Heavy-Ion Collision Analysis")
 
 with st.sidebar:
     st.header("Input")
-    data_dir = st.text_input("ROOT file folder", value="")
-    pattern = st.text_input("File pattern", value="*.root")
+    source_mode = st.radio(
+        "Data source",
+        ["Bundled sample", "Upload ROOT files", "Server folder"],
+        help="Try the included AO2D sample, upload your own ROOT files, or use a folder available on the server.",
+    )
+    uploaded_files = None
+    data_dir = ""
+    pattern = "*.root"
+    if source_mode == "Bundled sample":
+        sample_size_mb = SAMPLE_ROOT_FILE.stat().st_size / (1024 * 1024) if SAMPLE_ROOT_FILE.exists() else 0
+        st.caption(f"Included AO2D sample ({sample_size_mb:.1f} MB)")
+    elif source_mode == "Upload ROOT files":
+        uploaded_files = st.file_uploader(
+            "ROOT files",
+            type=["root"],
+            accept_multiple_files=True,
+            help="Files are copied to temporary server storage only for this analysis run.",
+        )
+    else:
+        data_dir = st.text_input("ROOT file folder", value="")
+        pattern = st.text_input("File pattern", value="*.root")
     file_format = st.selectbox(
         "File format",
         ["auto", "ao2d", "aliesd", "generic"],
@@ -68,9 +118,11 @@ with st.sidebar:
 
 
 if inspect_clicked:
-    if not data_dir:
-        st.error("Enter a ROOT file folder first.")
-    else:
+    temp_dir = None
+    try:
+        resolved_data_dir, resolved_pattern, temp_dir = prepare_data_source(
+            source_mode, uploaded_files, data_dir, pattern
+        )
         try:
             with st.spinner("Inspecting ROOT file..."):
                 import io
@@ -78,16 +130,19 @@ if inspect_clicked:
 
                 buffer = io.StringIO()
                 with contextlib.redirect_stdout(buffer):
-                    inspect_first_file(data_dir, pattern)
+                    inspect_first_file(resolved_data_dir, resolved_pattern)
                 st.code(buffer.getvalue(), language="text")
         except Exception as exc:
             st.error(str(exc))
+    except Exception as exc:
+        st.error(str(exc))
+    finally:
+        if temp_dir is not None:
+            temp_dir.cleanup()
 
 
 if run_clicked:
-    if not data_dir:
-        st.error("Enter a ROOT file folder first.")
-    elif pt_max <= pt_min:
+    if pt_max <= pt_min:
         st.error("pT max must be larger than pT min.")
     else:
         cuts = TrackCuts(
@@ -109,11 +164,15 @@ if run_clicked:
             max_pair_tracks=max_pair_tracks,
         )
 
+        temp_dir = None
         try:
+            resolved_data_dir, resolved_pattern, temp_dir = prepare_data_source(
+                source_mode, uploaded_files, data_dir, pattern
+            )
             with st.spinner("Loading ROOT files and running analysis..."):
                 tracks, cent = load_dataset(
-                    data_dir=data_dir,
-                    pattern=pattern,
+                    data_dir=resolved_data_dir,
+                    pattern=resolved_pattern,
                     max_files=int(max_files),
                     tree_name=tree_name or None,
                     cuts=cuts,
@@ -225,5 +284,8 @@ if run_clicked:
 
         except Exception as exc:
             st.error(str(exc))
+        finally:
+            if temp_dir is not None:
+                temp_dir.cleanup()
 else:
-    st.info("Configure the inputs in the sidebar, then run the analysis.")
+    st.info("Use the bundled sample for a quick test, or choose another data source in the sidebar.")
