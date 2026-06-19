@@ -1,0 +1,11 @@
+check,status,detail
+dataset_provenance,info,CERN Open Data record 11537; DOI 10.7483/OPENDATA.ALICE.Q4RZ.YFRX; Pb-Pb at 5.02 TeV; run 245349 (LHC15o).
+observable_scope,warning,"Outputs are raw reconstructed-track observables. They are not corrected for detector efficiency, acceptance, secondary contamination, or systematic uncertainties."
+ao2d_branch_mapping,warning,"AO2D pT is derived from abs(1/fSigned1Pt), eta from asinh(fTgl), and phi from fAlpha + asin(fSnp). Validate these mappings against the O2 table definition for the exact production before final physics claims."
+event_count,warning,Only 25 events were analyzed; use the largest practical event sample for stable physics comparisons.
+centrality_presence,pass,100.0% of analyzed events have finite centrality values.
+centrality_multiplicity_ordering,warning,"Mean multiplicity is not monotonic across centrality bins; inspect centrality mapping, event selection, and sample size."
+multiplicity_outliers,warning,Maximum event multiplicity 7933 is more than 10x the median 0.0; inspect event/track selection.
+v2_event_coverage,warning,v2 proxy used 9 of 25 events (36.0%); events with fewer than two finite phi tracks are skipped.
+v2_physics_status,warning,"v2{2} is a raw two-particle proxy without nonflow subtraction, eta gaps, weights, corrections, or systematic uncertainties."
+reference_comparison,fail,"No official/reference ALICE comparison table is bundled. Add reference values for this run/system/energy and compare dN/deta, pT spectra, centrality QA, and flow observables before claiming scientific validation."

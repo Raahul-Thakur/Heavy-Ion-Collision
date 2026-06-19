@@ -1,0 +1,2 @@
+events,total_tracks_after_cuts,mean_tracks_per_event,pt_min,pt_max,eta_abs_max,vertex_z_abs_max,require_collision_flag16,event_cuts_mask,require_tpc_quality,tpc_min_found,tpc_min_crossed_rows,tpc_max_chi2,centrality_present,phi_present,v2_2_all,c2_all,v2_pairs_used_all
+500,924786,1849.572,0.15,50.0,0.8,10.0,True,1023,True,70,70,4.0,True,True,0.03029073618340294,0.0009175286985325161,3787368662

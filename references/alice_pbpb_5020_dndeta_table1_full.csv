@@ -1,0 +1,12 @@
+centrality,centrality_low,centrality_high,eta_abs_max,dnch_deta,uncertainty_total,npart,uncertainty_npart,dnch_deta_per_participant_pair,uncertainty_per_participant_pair,source
+0-2.5%,0,2.5,0.5,2035,52,398,2,10.2,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+2.5-5%,2.5,5,0.5,1850,55,372,3,9.9,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+5-7.5%,5,7.5,0.5,1666,48,346,4,9.6,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+7.5-10%,7.5,10,0.5,1505,44,320,4,9.4,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+10-20%,10,20,0.5,1180,31,263,4,9.0,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+20-30%,20,30,0.5,786,20,188,3,8.4,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+30-40%,30,40,0.5,512,15,131,2,7.8,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+40-50%,40,50,0.5,318,12,86.3,1.7,7.4,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+50-60%,50,60,0.5,183,8,53.6,1.2,6.8,0.3,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+60-70%,60,70,0.5,96.3,5.8,30.4,0.8,6.3,0.4,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
+70-80%,70,80,0.5,44.9,3.4,15.6,0.5,5.8,0.5,ALICE Phys. Rev. Lett. 116 222302 Table 1 / arXiv:1512.06104
